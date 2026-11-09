@@ -1,20 +1,192 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: linneaternevik
-# "service" is the name of this project. This will also be added to your AWS resource names.
+# ==================================================
+# Service
+# ==================================================
+org: ${file(./local.yml):org}
 service: cupify-fp
 
+# ==================================================
+# Provider
+# ==================================================
 provider:
   name: aws
-  runtime: nodejs24.x
-  architecture: arm64
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
+  runtime: nodejs22.x
+  region: eu-north-1
+
+  iam:
+    role: ${file(./local.yml):role}
+
+  environment:
+    TOURNAMENTS_TABLE: ${self:service}-tournaments-${sls:stage}
+    TEAMS_TABLE: ${self:service}-teams-${sls:stage}
+    MATCHES_TABLE: ${self:service}-matches-${sls:stage}
 
 functions:
-  hello:
-    handler: handler.hello
+  # ==================================================
+  # Functions – Tournaments
+  # ==================================================
+  getTournaments:
+    handler: src/handlers/tournaments/getTournaments.handler
     events:
       - httpApi:
-          path: /
+          path: /tournaments
           method: get
+
+  getTournament:
+    handler: src/handlers/tournaments/getTournament.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}
+          method: get
+
+  createTournament:
+    handler: src/handlers/tournaments/createTournament.handler
+    events:
+      - httpApi:
+          path: /tournaments
+          method: post
+
+  updateTournamentStatus:
+    handler: src/handlers/tournaments/updateTournamentStatus.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/status
+          method: patch
+
+  deleteTournament:
+    handler: src/handlers/tournaments/deleteTournament.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}
+          method: delete
+
+  # ==================================================
+  # Functions – Teams
+  # ==================================================
+  getTeams:
+    handler: src/handlers/teams/getTeams.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams
+          method: get
+
+  getTeam:
+    handler: src/handlers/teams/getTeam.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: get
+
+  createTeam:
+    handler: src/handlers/teams/createTeam.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams
+          method: post
+
+  updateTeam:
+    handler: src/handlers/teams/updateTeam.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: put
+
+  deleteTeam:
+    handler: src/handlers/teams/deleteTeam.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: delete
+
+  # ==================================================
+  # Functions – Matches
+  # ==================================================
+  getMatches:
+    handler: src/handlers/matches/getMatches.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches
+          method: get
+
+  getMatch:
+    handler: src/handlers/matches/getMatch.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: get
+
+  createMatch:
+    handler: src/handlers/matches/createMatch.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches
+          method: post
+
+  updateMatch:
+    handler: src/handlers/matches/updateMatch.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: put
+
+  reportMatchResult:
+    handler: src/handlers/matches/reportMatchResult.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}/result
+          method: patch
+
+  deleteMatch:
+    handler: src/handlers/matches/deleteMatch.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: delete
+
+# ==================================================
+# Resources – DynamoDB tables
+# ==================================================
+resources:
+  Resources:
+    TournamentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TOURNAMENTS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    TeamsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TEAMS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: tournamentId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tournamentId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+
+    MatchesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.MATCHES_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: tournamentId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tournamentId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE

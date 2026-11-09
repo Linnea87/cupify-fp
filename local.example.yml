@@ -1,0 +1,6 @@
+# ==================================================
+# Template for personal config
+# Copy this file to local.yml and fill in your own values
+# ==================================================
+org: your-serverless-org
+role: arn:aws:iam::your-account-id:role/your-lambda-role

@@ -1,10 +1,10 @@
 // ==================================================
-// Endpoint: PUT /tournaments/{id}/teams/{teamId}
+// Endpoint: POST /tournaments
 // ==================================================
 
 // TODO: Implement according to the API specification
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   return {
     statusCode: 501,
     headers: { "Content-Type": "application/json" },

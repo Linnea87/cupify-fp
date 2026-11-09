@@ -1,10 +1,10 @@
 // ==================================================
-// Endpoint: GET /tournaments/{id}/matches
+// Endpoint: DELETE /tournaments/{id}/matches/{matchId}
 // ==================================================
 
 // TODO: Implement according to the API specification
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   return {
     statusCode: 501,
     headers: { "Content-Type": "application/json" },

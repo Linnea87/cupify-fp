@@ -25,35 +25,35 @@ functions:
   # Functions – Tournaments
   # ==================================================
   getTournaments:
-    handler: src/handlers/tournaments/getTournaments.handler
+    handler: functions/tournaments/getTournaments/index.handler
     events:
       - httpApi:
           path: /tournaments
           method: get
 
   getTournament:
-    handler: src/handlers/tournaments/getTournament.handler
+    handler: functions/tournaments/getTournament/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}
           method: get
 
   createTournament:
-    handler: src/handlers/tournaments/createTournament.handler
+    handler: functions/tournaments/createTournament/index.handler
     events:
       - httpApi:
           path: /tournaments
           method: post
 
   updateTournamentStatus:
-    handler: src/handlers/tournaments/updateTournamentStatus.handler
+    handler: functions/tournaments/updateTournamentStatus/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/status
           method: patch
 
   deleteTournament:
-    handler: src/handlers/tournaments/deleteTournament.handler
+    handler: functions/tournaments/deleteTournament/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}
@@ -63,35 +63,35 @@ functions:
   # Functions – Teams
   # ==================================================
   getTeams:
-    handler: src/handlers/teams/getTeams.handler
+    handler: functions/teams/getTeams/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/teams
           method: get
 
   getTeam:
-    handler: src/handlers/teams/getTeam.handler
+    handler: functions/teams/getTeam/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/teams/{teamId}
           method: get
 
   createTeam:
-    handler: src/handlers/teams/createTeam.handler
+    handler: functions/teams/createTeam/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/teams
           method: post
 
   updateTeam:
-    handler: src/handlers/teams/updateTeam.handler
+    handler: functions/teams/updateTeam/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/teams/{teamId}
           method: put
 
   deleteTeam:
-    handler: src/handlers/teams/deleteTeam.handler
+    handler: functions/teams/deleteTeam/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/teams/{teamId}
@@ -101,42 +101,42 @@ functions:
   # Functions – Matches
   # ==================================================
   getMatches:
-    handler: src/handlers/matches/getMatches.handler
+    handler: functions/matches/getMatches/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches
           method: get
 
   getMatch:
-    handler: src/handlers/matches/getMatch.handler
+    handler: functions/matches/getMatch/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches/{matchId}
           method: get
 
   createMatch:
-    handler: src/handlers/matches/createMatch.handler
+    handler: functions/matches/createMatch/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches
           method: post
 
   updateMatch:
-    handler: src/handlers/matches/updateMatch.handler
+    handler: functions/matches/updateMatch/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches/{matchId}
           method: put
 
   reportMatchResult:
-    handler: src/handlers/matches/reportMatchResult.handler
+    handler: functions/matches/reportMatchResult/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches/{matchId}/result
           method: patch
 
   deleteMatch:
-    handler: src/handlers/matches/deleteMatch.handler
+    handler: functions/matches/deleteMatch/index.handler
     events:
       - httpApi:
           path: /tournaments/{id}/matches/{matchId}

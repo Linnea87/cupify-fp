@@ -1,0 +1,31 @@
+{
+  "name": "cupify-fp",
+  "version": "1.0.0",
+  "description": "Cupify – REST API for managing sports tournaments, built with AWS Lambda, API Gateway and DynamoDB",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Linnea87/cupify-fp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Linnea87/cupify-fp/issues"
+  },
+  "homepage": "https://github.com/Linnea87/cupify-fp#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1164.0",
+    "@aws-sdk/lib-dynamodb": "^3.1164.0"
+  },
+  "devDependencies": {
+    "serverless": "^4.46.0"
+  },
+  "allowScripts": {
+    "serverless@4.46.0": true
+  }
+}

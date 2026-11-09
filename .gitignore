@@ -1,0 +1,11 @@
+# Dependencies
+node_modules
+
+# Serverless build output
+.serverless
+
+# Environment and local config
+.env
+
+# OS files
+.DS_Store

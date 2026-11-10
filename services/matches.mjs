@@ -2,7 +2,12 @@
 // Matches service – DynamoDB operations
 // ==================================================
 
-import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  QueryCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
 
@@ -74,5 +79,52 @@ export const createMatch = async (match) => {
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not create match");
+  }
+};
+
+// Update the teams and date of a scheduled match
+
+export const updateMatch = async (tournamentId, matchId, data) => {
+  try {
+    const command = new UpdateCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Key: {
+        tournamentId,
+        id: matchId,
+      },
+      UpdateExpression:
+        "SET homeTeamId = :home, awayTeamId = :away, #date = :date",
+      ConditionExpression:
+        "attribute_exists(id) AND #status = :scheduled",
+      ExpressionAttributeNames: {
+        "#date": "date",
+        "#status": "status",
+      },
+      ExpressionAttributeValues: {
+        ":home": data.homeTeamId,
+        ":away": data.awayTeamId,
+        ":date": data.date,
+        ":scheduled": "scheduled",
+      },
+      ReturnValues: "ALL_NEW",
+    });
+
+    const { Attributes } = await db.send(command);
+
+    return Attributes;
+  } catch (error) {
+    if (error.name === "ConditionalCheckFailedException") {
+      // Check whether the match is missing or already completed
+      const match = await getMatchById(tournamentId, matchId);
+
+      if (!match) {
+        throw createError(404, "Match not found");
+      }
+
+      throw createError(409, "Only scheduled matches can be updated");
+    }
+
+    console.log("ERROR:", error);
+    throw createError(500, "Could not update match");
   }
 };

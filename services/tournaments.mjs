@@ -2,7 +2,12 @@
 // Tournaments service – DynamoDB operations
 // ==================================================
 
-import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  QueryCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
 
@@ -70,5 +75,26 @@ export const getTournaments = async () => {
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not get tournaments");
+  }
+};
+
+// Update only the status of a tournament and return the updated tournament
+export const updateTournamentStatus = async (id, status) => {
+  try {
+    const command = new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { type: TOURNAMENT_TYPE, id },
+      UpdateExpression: "SET #status = :status",
+      ConditionExpression: "attribute_exists(id)",
+      ExpressionAttributeNames: { "#status": "status" },
+      ExpressionAttributeValues: { ":status": status },
+      ReturnValues: "ALL_NEW",
+    });
+
+    const { Attributes } = await db.send(command);
+    return toTournament(Attributes);
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not update tournament status");
   }
 };

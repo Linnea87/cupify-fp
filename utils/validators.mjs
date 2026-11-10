@@ -6,15 +6,11 @@
 const ISO_DATE_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
-// --------------------------------------------------
 // True if the value is a string with at least one non-space character
-// --------------------------------------------------
 export const isNonEmptyString = (value) =>
   typeof value === "string" && value.trim() !== "";
 
-// --------------------------------------------------
 // True if the value is a real date in ISO 8601 format
-// --------------------------------------------------
 export const isValidIsoDate = (value) => {
   if (typeof value !== "string") return false;
 

@@ -2,12 +2,14 @@
 // Endpoint: GET /tournaments
 // ==================================================
 
-// TODO: Implement according to the API specification
+import middy from "@middy/core";
+import { sendResponse } from "../../../responses/index.mjs";
+import { errorHandler } from "../../../middlewares/errorHandler.mjs";
+import { getTournaments } from "../../../services/tournaments.mjs";
 
-export const handler = async (event) => {
-  return {
-    statusCode: 501,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ error: "Not implemented" }),
-  };
+const getTournamentsHandler = async () => {
+  const tournaments = await getTournaments();
+  return sendResponse(200, tournaments);
 };
+
+export const handler = middy(getTournamentsHandler).use(errorHandler());

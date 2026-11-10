@@ -1,4 +1,6 @@
-
+// ==================================================
+// Endpoint: GET /tournaments/{id}/matches
+// ==================================================
 import middy from "@middy/core";
 import { getMatchesByTournament } from "../../../services/matches.mjs";
 import { sendResponse } from "../../../responses/index.mjs";

@@ -12,9 +12,7 @@ export const errorHandler = () => ({
     const error = request.error;
     const statusCode = error.statusCode ?? 500;
 
-    // --------------------------------------------------
     // Invalid JSON body – returned as 400 per the API specification
-    // --------------------------------------------------
     if (BODY_ERROR_CODES.includes(statusCode)) {
       request.response = sendResponse(400, {
         error: "Request body must be valid JSON",
@@ -22,17 +20,13 @@ export const errorHandler = () => ({
       return;
     }
 
-    // --------------------------------------------------
     // Expected errors thrown with createError (400, 404, 409)
-    // --------------------------------------------------
     if (statusCode < 500) {
       request.response = sendResponse(statusCode, { error: error.message });
       return;
     }
 
-    // --------------------------------------------------
     // Unexpected errors – logged, returned without details
-    // --------------------------------------------------
     console.log("ERROR:", error);
     request.response = sendResponse(500, { error: "Internal server error" });
   },

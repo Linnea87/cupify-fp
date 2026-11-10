@@ -15,10 +15,11 @@ export const createTeam = async (team) => {
 export const getTeamsByTournament = async (tournamentId) => {
     const result = await db.send(
         new QueryCommand({
-            TableName: process.nextTick.TEAMS_TABLE,
+            TableName: process.env.TEAMS_TABLE,
             KeyConditionExpression: "tournamentId = :tournamentId",
             ExpressionAttributeValues: { ":tournamentId": tournamentId,},
         })
 
     );
+    return result.Items;
 }

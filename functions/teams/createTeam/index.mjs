@@ -10,14 +10,15 @@ import { errorHandler } from "../../../middlewares/errorHandler.mjs";
 import { sendResponse } from "../../../responses/index.mjs";
 import { randomUUID } from "crypto";
 import { getTournamentById } from "../../../services/tournaments.mjs";
+import { isNonEmptyString } from "../../../utils/validators.mjs";
 
 const createTeamHandler = async (event) => {
   const tournamentId = event.pathParameters.id;
   const { name, city, coach } = event.body ?? {};
 
-  if (!name?.trim() || !city?.trim() || !coach?.trim()) {
+  if (!isNonEmptyString(name) || !isNonEmptyString(city)|| !isNonEmptyString(coach)) {
     throw createError(400, "Name, city and coach are required");
-  }
+  } 
 
   const tournament = await getTournamentById(tournamentId);
   if (!tournament) {

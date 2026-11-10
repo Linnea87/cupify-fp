@@ -1,4 +1,4 @@
-import { PutCommand, GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, GetCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { db } from "./db.mjs";
 
 export const createTeam = async (team) => {
@@ -31,4 +31,19 @@ export const getTeamsByTournament = async (tournamentId) => {
 
     );
     return result.Items;
+};
+
+export const updateTeam = async (tournamentId, teamId, data) => {
+    const result = await db.send(
+        new UpdateCommand({
+            TableName: process.env.TEAMS_TABLE,
+            Key: {tournamentId, id: teamId},
+            UpdateExpression: "SET #name = :name, city = :city, coach = :coach",
+            ExpressionAttributeNames: {"#name": "name"},
+            ExpressionAttributeValues: {":name": data.name, ":city": data.city, ":coach": data.coach,},
+            ConditionExpression: "attribute_exists(id)", 
+            ReturnValues: "ALL_NEW",
+        })
+    );
+    return result.Attributes;
 }

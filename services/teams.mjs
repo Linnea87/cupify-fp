@@ -1,4 +1,4 @@
-import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { db } from "./db.mjs";
 
 export const createTeam = async (team) => {
@@ -19,4 +19,16 @@ export const getTeamById = async (tournamentId, teamId) => {
         })
     );
     return result.Item;
+};
+
+export const getTeamsByTournament = async (tournamentId) => {
+    const result = await db.send(
+        new QueryCommand({
+            TableName: process.env.TEAMS_TABLE,
+            KeyConditionExpression: "tournamentId = :tournamentId",
+            ExpressionAttributeValues: { ":tournamentId": tournamentId,},
+        })
+
+    );
+    return result.Items;
 }

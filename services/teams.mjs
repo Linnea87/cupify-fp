@@ -1,4 +1,4 @@
-import { PutCommand, GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, GetCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { db } from "./db.mjs";
 
 export const createTeam = async (team) => {
@@ -46,4 +46,13 @@ export const tournamentHasTeams = async (tournamentId) => {
   );
 
   return result.Items.length > 0;
+};
+
+export const deleteTeam = async (tournamentId, teamId) => {
+  await db.send(
+    new DeleteCommand({
+      TableName: process.env.TEAMS_TABLE,
+      Key: { tournamentId, id: teamId },
+    })
+  );
 };

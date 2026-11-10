@@ -14,9 +14,25 @@ import { isNonEmptyString } from "../../../utils/validators.mjs";
 
 const createTeamHandler = async (event) => {
   const tournamentId = event.pathParameters.id;
-  const { name, city, coach } = event.body ?? {};
+  const body = event.body ?? {};
+  const { name, city, coach } = body;
 
-  if (!isNonEmptyString(name) || !isNonEmptyString(city)|| !isNonEmptyString(coach)) {
+  const allowedFields = ["name", "city", "coach"];
+
+  if (
+    typeof body !== "object" ||
+    body === null ||
+    Array.isArray(body) ||
+    Object.keys(body).some((field) => !allowedFields.includes(field))
+  ) {
+    throw createError(400, "Only name, city and coach are allowed");
+  }
+
+  if (
+    !isNonEmptyString(name) || 
+    !isNonEmptyString(city)|| 
+    !isNonEmptyString(coach)
+  ){
     throw createError(400, "Name, city and coach are required");
   } 
 

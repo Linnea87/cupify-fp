@@ -2,7 +2,7 @@
 // Tournaments service – DynamoDB operations
 // ==================================================
 
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
 
@@ -20,5 +20,22 @@ export const getTournamentById = async (id) => {
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not get tournament");
+  }
+};
+
+// Save a new tournament
+export const createTournament = async (tournament) => {
+  try {
+    const command = new PutCommand({
+      TableName: TABLE_NAME,
+      Item: tournament,
+      ConditionExpression: "attribute_not_exists(id)",
+    });
+
+    await db.send(command);
+    return tournament;
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not create tournament");
   }
 };

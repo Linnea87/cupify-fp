@@ -7,27 +7,21 @@ import httpJsonBodyParser from "@middy/http-json-body-parser";
 import { createTeam } from "../../../services/teams.mjs";
 import createError from "http-errors";
 import { errorHandler } from "../../../middlewares/errorHandler.mjs";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
-import { db } from "../../../services/db.mjs";
 import { sendResponse } from "../../../responses/index.mjs";
 import { randomUUID } from "crypto";
+import { getTournamentById } from "../../../services/tournaments.mjs";
 
 const createTeamHandler = async (event) => {
   const tournamentId = event.pathParameters.id;
   const { name, city, coach } = event.body ?? {};
 
   if (!name?.trim() || !city?.trim() || !coach?.trim()) {
-    throw createError(400, "Namn, stad och tränare måste anges");
+    throw createError(400, "Name, city and coach are required");
   }
 
-  const tournament = await db.send(
-    new GetCommand({
-      TableName: process.env.TOURNAMENTS_TABLE,
-      Key: {id: tournamentId},
-    })
-  );
-  if (!tournament.Item) {
-    throw createError(404, "Turneringen finns inte");
+  const tournament = await getTournamentById(tournamentId);
+  if (!tournament) {
+    throw createError(404, "Tournament not found");
   }
 
   const team = {
@@ -41,7 +35,6 @@ const createTeamHandler = async (event) => {
   await createTeam(team);
 
   return sendResponse(201, team);
-
 };
 
 export const handler = middy(createTeamHandler)

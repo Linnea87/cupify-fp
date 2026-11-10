@@ -2,9 +2,31 @@
 // Matches service – DynamoDB operations
 // ==================================================
 
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
+
+
+// Get a single match by tournament ID and match ID
+export const getMatchById = async (tournamentId, matchId) => {
+  try {
+    const command = new GetCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Key: {
+        tournamentId,
+        id: matchId,
+      },
+    });
+
+    const { Item } = await db.send(command);
+
+    return Item ?? null;
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not get match");
+  }
+};
+
 
 // Get all matches belonging to a tournament
 

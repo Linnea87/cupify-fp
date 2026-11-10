@@ -2,7 +2,7 @@
 // Matches service – DynamoDB operations
 // ==================================================
 
-import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
 
@@ -29,6 +29,7 @@ export const getMatchById = async (tournamentId, matchId) => {
 
 
 // Get all matches belonging to a tournament
+
 export const getMatchesByTournament = async (tournamentId) => {
   try {
     const matches = [];
@@ -54,5 +55,24 @@ export const getMatchesByTournament = async (tournamentId) => {
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not get matches");
+  }
+};
+
+
+// Create a new match in DynamoDB
+export const createMatch = async (match) => {
+  try {
+    const command = new PutCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Item: match,
+      ConditionExpression: "attribute_not_exists(id)",
+    });
+
+    await db.send(command);
+
+    return match;
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not create match");
   }
 };

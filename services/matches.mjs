@@ -1,19 +1,15 @@
 
-import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
+import { getTournamentById } from "./tournaments.mjs";
 
 // Get all matches belonging to a tournament
 export const getMatchesByTournament = async (tournamentId) => {
-  // Check if the tournament exists
-  const tournamentResult = await db.send(
-    new GetCommand({
-      TableName: process.env.TOURNAMENTS_TABLE,
-      Key: { id: tournamentId },
-    })
-  );
+  // Check if the tournament exists using the shared service
+  const tournament = await getTournamentById(tournamentId);
 
-  if (!tournamentResult.Item) {
+  if (!tournament) {
     throw createError(404, "Tournament not found");
   }
 

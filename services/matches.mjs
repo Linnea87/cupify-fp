@@ -155,3 +155,56 @@ export const tournamentHasMatches = async (tournamentId) => {
     throw createError(500, "Could not check tournament matches");
   }
 }
+
+
+ // Report a match result and mark the match as completed
+
+export const reportMatchResult = async (
+  tournamentId,
+  matchId,
+  homeScore,
+  awayScore
+) => {
+  try {
+    const command = new UpdateCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Key: {
+        tournamentId,
+        id: matchId,
+      },
+      UpdateExpression:
+        "SET homeScore = :homeScore, awayScore = :awayScore, #status = :completed",
+      ConditionExpression:
+       "attribute_exists(id) AND #status = :scheduled",
+      ExpressionAttributeNames: {
+        "#status": "status",
+      },
+      ExpressionAttributeValues: {
+        ":homeScore": homeScore,
+        ":awayScore": awayScore,
+        ":completed": "completed",
+        ":scheduled": "scheduled",
+      },
+      ReturnValues: "ALL_NEW",
+    });
+
+    const { Attributes } = await db.send(command);
+    return Attributes;
+  } catch (error) {
+    if (error.name === "ConditionalCheckFailedException") {
+      const match = await getMatchById(tournamentId, matchId);
+
+      if (!match) {
+        throw createError(404, "Match not found");
+      }
+
+      throw createError(
+        409,
+        "Match result already registered or match is not scheduled"
+      );
+    }
+
+    console.log("ERROR:", error);
+    throw createError(500, "Could not report match result");
+  }
+};

@@ -105,7 +105,7 @@ export const deleteTournament = async (id) => {
   try {
     const command = new DeleteCommand({
       TableName: TABLE_NAME,
-      key: { type: TOURNAMENT_TYPE, id },
+      Key: { type: TOURNAMENT_TYPE, id },
       ConditionExpression: "attribute_exists(id)",
     });
 

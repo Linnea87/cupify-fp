@@ -144,7 +144,7 @@ export const tournamentHasMatches = async (tournamentId) => {
         TableName: process.env.MATCHES_TABLE,
         KeyConditionExpression: "tournamentId = :tournamentId",
         ExpressionAttributeValues: {
-          ":id": tournamentId,
+          ":tournamentId": tournamentId,
         },
         Limit: 1,
       })

@@ -7,6 +7,7 @@ import {
   PutCommand,
   QueryCommand,
   UpdateCommand,
+  DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
@@ -155,3 +156,26 @@ export const tournamentHasMatches = async (tournamentId) => {
     throw createError(500, "Could not check tournament matches");
   }
 }
+
+// Delete a match from DynamoDB
+export const deleteMatch = async (tournamentId, matchId) => {
+  try {
+    const command = new DeleteCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Key: {
+        tournamentId,
+        id: matchId,
+      },
+      ConditionExpression: "attribute_exists(id)",
+    });
+
+    await db.send(command);
+  } catch (error) {
+    if (error.name === "ConditionalCheckFailedException") {
+      throw createError(404, "Match not found");
+    }
+
+    console.log("ERROR:", error);
+    throw createError(500, "Could not delete match");
+  }
+};

@@ -7,6 +7,7 @@ import {
   PutCommand,
   QueryCommand,
   UpdateCommand,
+  DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
@@ -157,8 +158,9 @@ export const tournamentHasMatches = async (tournamentId) => {
 }
 
 
- // Report a match result and mark the match as completed
-
+//
+// CF-15: Report a match result and mark the match as completed
+//
 export const reportMatchResult = async (
   tournamentId,
   matchId,
@@ -175,7 +177,7 @@ export const reportMatchResult = async (
       UpdateExpression:
         "SET homeScore = :homeScore, awayScore = :awayScore, #status = :completed",
       ConditionExpression:
-       "attribute_exists(id) AND #status = :scheduled",
+        "attribute_exists(id) AND #status = :scheduled",
       ExpressionAttributeNames: {
         "#status": "status",
       },
@@ -206,5 +208,28 @@ export const reportMatchResult = async (
 
     console.log("ERROR:", error);
     throw createError(500, "Could not report match result");
+  }
+};
+
+// CF-16: Delete a match from DynamoDB
+export const deleteMatch = async (tournamentId, matchId) => {
+  try {
+    const command = new DeleteCommand({
+      TableName: process.env.MATCHES_TABLE,
+      Key: {
+        tournamentId,
+        id: matchId,
+      },
+      ConditionExpression: "attribute_exists(id)",
+    });
+
+    await db.send(command);
+  } catch (error) {
+    if (error.name === "ConditionalCheckFailedException") {
+      throw createError(404, "Match not found");
+    }
+
+    console.log("ERROR:", error);
+    throw createError(500, "Could not delete match");
   }
 };

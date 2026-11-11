@@ -32,3 +32,18 @@ export const getTeamsByTournament = async (tournamentId) => {
     );
     return result.Items;
 }
+
+export const tournamentHasTeams = async (tournamentId) => {
+  const result = await db.send(
+    new QueryCommand({
+      TableName: process.env.TEAMS_TABLE,
+      KeyConditionExpression: "tournamentId = :tournamentId",
+      ExpressionAttributeValues: {
+        ":tournamentId": tournamentId,
+      },
+      Limit: 1,
+    })
+  );
+
+  return result.Items.length > 0;
+};

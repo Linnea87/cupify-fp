@@ -128,3 +128,30 @@ export const updateMatch = async (tournamentId, matchId, data) => {
     throw createError(500, "Could not update match");
   }
 };
+
+export const teamHasMatches = async (tournamentId, teamId) => {
+  const matches = await getMatchesByTournament(tournamentId);
+
+  return matches.some(
+    (match) => match.homeTeamId === teamId || match.awayTeamId === teamId
+  );
+}
+
+export const tournamentHasMatches = async (tournamentId) => {
+  try {
+    const result = await db.send(
+      new QueryCommand({
+        TableName: process.env.MATCHES_TABLE,
+        KeyConditionExpression: "tournamentId = :tournamentId",
+        ExpressionAttributeValues: {
+          ":id": tournamentId,
+        },
+        Limit: 1,
+      })
+    );
+    return result.Items.length > 0;
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not check tournament matches");
+  }
+}

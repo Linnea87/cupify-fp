@@ -7,6 +7,7 @@ import {
   PutCommand,
   QueryCommand,
   UpdateCommand,
+  DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import createError from "http-errors";
 import { db } from "./db.mjs";
@@ -96,5 +97,21 @@ export const updateTournamentStatus = async (id, status) => {
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not update tournament status");
+  }
+};
+
+// Delete a tournament by id
+export const deleteTournament = async (id) => {
+  try {
+    const command = new DeleteCommand({
+      TableName: TABLE_NAME,
+      key: { type: TOURNAMENT_TYPE, id },
+      ConditionExpression: "attribute_exists(id)",
+    });
+
+    await db.send(command);
+  } catch (error) {
+    console.log("ERROR:", error);
+    throw createError(500, "Could not delete tournament");
   }
 };

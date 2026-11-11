@@ -14,18 +14,7 @@ import { isNonEmptyString } from "../../../utils/validators.mjs";
 const updateTeamHandler = async (event) => {
   const tournamentId = event.pathParameters.id;
   const teamId = event.pathParameters.teamId;
-  const body = event.body ?? {};
   const {name, city, coach} = event.body ?? {};
-  const allowedFields = ["name", "city", "coach"];
-
-  if(
-    typeof body !== "object" ||
-    body === null ||
-    Array.isArray(body) ||
-    Object.keys(body).some((field) => !allowedFields.includes(field))
-  ) {
-    throw createError(400, "Only name, city and coach can be updated");
-  }
 
   if (!isNonEmptyString(name) || !isNonEmptyString(city) || !isNonEmptyString(coach)) {
     throw createError(400, "Name, city and coach are required");

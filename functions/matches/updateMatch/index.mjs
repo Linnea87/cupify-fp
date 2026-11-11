@@ -22,15 +22,9 @@ const updateMatchHandler = async (event) => {
   const matchId = event.pathParameters?.matchId;
   const body = event.body ?? {};
 
-  // Allow only team IDs and date
-  const allowedFields = ["homeTeamId", "awayTeamId", "date"];
-
-  if (
-    typeof body !== "object" ||
-    Array.isArray(body) ||
-    Object.keys(body).some((field) => !allowedFields.includes(field))
-  ) {
-    throw createError(400, "Only teams and date can be updated");
+  // Validate request body
+    if (typeof body !== "object" || Array.isArray(body)) {
+   throw createError(400, "Invalid request body");
   }
 
   const { homeTeamId, awayTeamId, date } = body;

@@ -20,7 +20,10 @@
   "homepage": "https://github.com/Linnea87/cupify-fp#readme",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1164.0",
-    "@aws-sdk/lib-dynamodb": "^3.1164.0"
+    "@aws-sdk/lib-dynamodb": "^3.1164.0",
+    "@middy/core": "^7.9.2",
+    "@middy/http-json-body-parser": "^7.9.2",
+    "http-errors": "^2.0.1"
   },
   "devDependencies": {
     "serverless": "^4.46.0"

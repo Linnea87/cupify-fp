@@ -1,20 +1,206 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: linneaternevik
-# "service" is the name of this project. This will also be added to your AWS resource names.
+# ==================================================
+# Service
+# ==================================================
+org: ${file(./local.yml):org}
 service: cupify-fp
 
+# ==================================================
+# Provider
+# ==================================================
 provider:
   name: aws
-  runtime: nodejs24.x
-  architecture: arm64
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
+  runtime: nodejs22.x
+  region: eu-north-1
+
+  iam:
+    role: ${file(./local.yml):role}
+
+  environment:
+    TOURNAMENTS_TABLE: ${self:service}-tournaments-v2-${sls:stage}
+    TEAMS_TABLE: ${self:service}-teams-${sls:stage}
+    MATCHES_TABLE: ${self:service}-matches-${sls:stage}
 
 functions:
-  hello:
-    handler: handler.hello
+  # ==================================================
+  # Functions – Tournaments
+  # ==================================================
+  getTournaments:
+    handler: functions/tournaments/getTournaments/index.handler
     events:
       - httpApi:
-          path: /
+          path: /tournaments
           method: get
+
+  getTournament:
+    handler: functions/tournaments/getTournament/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}
+          method: get
+
+  createTournament:
+    handler: functions/tournaments/createTournament/index.handler
+    events:
+      - httpApi:
+          path: /tournaments
+          method: post
+
+  updateTournamentStatus:
+    handler: functions/tournaments/updateTournamentStatus/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/status
+          method: patch
+
+  deleteTournament:
+    handler: functions/tournaments/deleteTournament/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}
+          method: delete
+
+  # ==================================================
+  # Functions – Teams
+  # ==================================================
+  getTeams:
+    handler: functions/teams/getTeams/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams
+          method: get
+
+  getTeam:
+    handler: functions/teams/getTeam/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: get
+
+  createTeam:
+    handler: functions/teams/createTeam/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams
+          method: post
+
+  updateTeam:
+    handler: functions/teams/updateTeam/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: put
+
+  deleteTeam:
+    handler: functions/teams/deleteTeam/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/teams/{teamId}
+          method: delete
+
+  # ==================================================
+  # Functions – Matches
+  # ==================================================
+  getMatches:
+    handler: functions/matches/getMatches/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches
+          method: get
+
+  getMatch:
+    handler: functions/matches/getMatch/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: get
+
+  createMatch:
+    handler: functions/matches/createMatch/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches
+          method: post
+
+  updateMatch:
+    handler: functions/matches/updateMatch/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: put
+
+  reportMatchResult:
+    handler: functions/matches/reportMatchResult/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}/result
+          method: patch
+
+  deleteMatch:
+    handler: functions/matches/deleteMatch/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/matches/{matchId}
+          method: delete
+
+  # ==================================================
+  # Functions – Standings (bonus)
+  # ==================================================
+  getStandings:
+    handler: functions/standings/getStandings/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/standings
+          method: get
+
+# ==================================================
+# Resources – DynamoDB tables
+# ==================================================
+resources:
+  Resources:
+    TournamentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TOURNAMENTS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: type
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: type
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+
+    TeamsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TEAMS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: tournamentId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tournamentId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+
+    MatchesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.MATCHES_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: tournamentId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tournamentId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE

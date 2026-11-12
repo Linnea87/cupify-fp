@@ -21,7 +21,7 @@ Cupify is a serverless REST API for managing sports tournaments, teams, matches 
 
 ## Deployed API
 
-**Base URL:** `https://YOUR-PROD-URL.execute-api.eu-north-1.amazonaws.com`
+**Base URL:** https://k9xjf078t1.execute-api.eu-north-1.amazonaws.com
 
 All endpoints below are relative to this URL.
 

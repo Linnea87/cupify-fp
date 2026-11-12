@@ -142,6 +142,16 @@ functions:
           path: /tournaments/{id}/matches/{matchId}
           method: delete
 
+  # ==================================================
+  # Functions – Standings (bonus)
+  # ==================================================
+  getStandings:
+    handler: functions/standings/getStandings/index.handler
+    events:
+      - httpApi:
+          path: /tournaments/{id}/standings
+          method: get
+
 # ==================================================
 # Resources – DynamoDB tables
 # ==================================================

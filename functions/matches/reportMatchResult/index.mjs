@@ -1,5 +1,4 @@
-
- // ==================================================
+// ==================================================
 // Endpoint: PATCH /tournaments/{id}/matches/{matchId}/result
 // ==================================================
 
@@ -7,10 +6,7 @@ import middy from "@middy/core";
 import httpJsonBodyParser from "@middy/http-json-body-parser";
 import createError from "http-errors";
 
-import {
-  getMatchById,
-  reportMatchResult,
-} from "../../../services/matches.mjs";
+import { getMatchById, reportMatchResult } from "../../../services/matches.mjs";
 
 import { getTournamentById } from "../../../services/tournaments.mjs";
 import { sendResponse } from "../../../responses/index.mjs";
@@ -56,7 +52,10 @@ const reportMatchResultHandler = async (event) => {
     match.homeScore != null ||
     match.awayScore != null
   ) {
-    throw createError(409, "Match result already registered or match is not scheduled");
+    throw createError(
+      409,
+      "Match result already registered or match is not scheduled",
+    );
   }
 
   // Save the result
@@ -64,7 +63,7 @@ const reportMatchResultHandler = async (event) => {
     tournamentId,
     matchId,
     homeScore,
-    awayScore
+    awayScore,
   );
 
   return sendResponse(200, updatedMatch);

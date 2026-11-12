@@ -1,4 +1,3 @@
-
 // ==================================================
 // Endpoint: PUT /tournaments/{id}/matches/{matchId}
 // ==================================================
@@ -23,8 +22,8 @@ const updateMatchHandler = async (event) => {
   const body = event.body ?? {};
 
   // Validate request body
-    if (typeof body !== "object" || Array.isArray(body)) {
-   throw createError(400, "Invalid request body");
+  if (typeof body !== "object" || Array.isArray(body)) {
+    throw createError(400, "Invalid request body");
   }
 
   const { homeTeamId, awayTeamId, date } = body;
@@ -35,7 +34,10 @@ const updateMatchHandler = async (event) => {
     !isNonEmptyString(awayTeamId) ||
     !isValidIsoDate(date)
   ) {
-    throw createError(400, "Valid homeTeamId, awayTeamId and date are required");
+    throw createError(
+      400,
+      "Valid homeTeamId, awayTeamId and date are required",
+    );
   }
 
   const homeId = homeTeamId.trim();

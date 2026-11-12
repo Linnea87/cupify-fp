@@ -5,10 +5,7 @@
 import middy from "@middy/core";
 import createError from "http-errors";
 
-import {
-  getMatchById,
-  deleteMatch,
-} from "../../../services/matches.mjs";
+import { getMatchById, deleteMatch } from "../../../services/matches.mjs";
 
 import { getTournamentById } from "../../../services/tournaments.mjs";
 import { sendResponse } from "../../../responses/index.mjs";
@@ -38,5 +35,4 @@ const deleteMatchHandler = async (event) => {
   return sendResponse(204);
 };
 
-export const handler = middy(deleteMatchHandler)
-  .use(errorHandler());
+export const handler = middy(deleteMatchHandler).use(errorHandler());

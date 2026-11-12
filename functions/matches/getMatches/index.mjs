@@ -25,5 +25,4 @@ const getMatchesHandler = async (event) => {
   return sendResponse(200, matches);
 };
 
-export const handler = middy(getMatchesHandler)
-  .use(errorHandler());
+export const handler = middy(getMatchesHandler).use(errorHandler());

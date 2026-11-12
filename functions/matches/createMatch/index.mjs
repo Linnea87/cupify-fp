@@ -1,4 +1,3 @@
-
 // ==================================================
 // Endpoint: POST /tournaments/{id}/matches
 // ==================================================
@@ -11,7 +10,10 @@ import { randomUUID } from "crypto";
 import { createMatch } from "../../../services/matches.mjs";
 import { getTournamentById } from "../../../services/tournaments.mjs";
 import { getTeamById } from "../../../services/teams.mjs";
-import { isNonEmptyString, isValidIsoDate } from "../../../utils/validators.mjs";
+import {
+  isNonEmptyString,
+  isValidIsoDate,
+} from "../../../utils/validators.mjs";
 import { sendResponse } from "../../../responses/index.mjs";
 import { errorHandler } from "../../../middlewares/errorHandler.mjs";
 
@@ -20,10 +22,7 @@ const createMatchHandler = async (event) => {
   const { homeTeamId, awayTeamId, date } = event.body ?? {};
 
   // Validate required fields
-  if (
-    !isNonEmptyString(homeTeamId) ||
-    !isNonEmptyString(awayTeamId)
-  ) {
+  if (!isNonEmptyString(homeTeamId) || !isNonEmptyString(awayTeamId)) {
     throw createError(400, "homeTeamId and awayTeamId are required");
   }
 

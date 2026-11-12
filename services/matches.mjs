@@ -12,7 +12,6 @@ import {
 import createError from "http-errors";
 import { db } from "./db.mjs";
 
-
 // Get a single match by tournament ID and match ID
 export const getMatchById = async (tournamentId, matchId) => {
   try {
@@ -33,7 +32,6 @@ export const getMatchById = async (tournamentId, matchId) => {
   }
 };
 
-
 // Get all matches belonging to a tournament
 
 export const getMatchesByTournament = async (tournamentId) => {
@@ -50,7 +48,7 @@ export const getMatchesByTournament = async (tournamentId) => {
             ":id": tournamentId,
           },
           ...(lastKey ? { ExclusiveStartKey: lastKey } : {}),
-        })
+        }),
       );
 
       matches.push(...(result.Items ?? []));
@@ -63,7 +61,6 @@ export const getMatchesByTournament = async (tournamentId) => {
     throw createError(500, "Could not get matches");
   }
 };
-
 
 // Create a new match in DynamoDB
 export const createMatch = async (match) => {
@@ -95,8 +92,7 @@ export const updateMatch = async (tournamentId, matchId, data) => {
       },
       UpdateExpression:
         "SET homeTeamId = :home, awayTeamId = :away, #date = :date",
-      ConditionExpression:
-        "attribute_exists(id) AND #status = :scheduled",
+      ConditionExpression: "attribute_exists(id) AND #status = :scheduled",
       ExpressionAttributeNames: {
         "#date": "date",
         "#status": "status",
@@ -134,9 +130,9 @@ export const teamHasMatches = async (tournamentId, teamId) => {
   const matches = await getMatchesByTournament(tournamentId);
 
   return matches.some(
-    (match) => match.homeTeamId === teamId || match.awayTeamId === teamId
+    (match) => match.homeTeamId === teamId || match.awayTeamId === teamId,
   );
-}
+};
 
 export const tournamentHasMatches = async (tournamentId) => {
   try {
@@ -148,15 +144,14 @@ export const tournamentHasMatches = async (tournamentId) => {
           ":tournamentId": tournamentId,
         },
         Limit: 1,
-      })
+      }),
     );
     return result.Items.length > 0;
   } catch (error) {
     console.log("ERROR:", error);
     throw createError(500, "Could not check tournament matches");
   }
-}
-
+};
 
 //
 // CF-15: Report a match result and mark the match as completed
@@ -165,7 +160,7 @@ export const reportMatchResult = async (
   tournamentId,
   matchId,
   homeScore,
-  awayScore
+  awayScore,
 ) => {
   try {
     const command = new UpdateCommand({
@@ -176,8 +171,7 @@ export const reportMatchResult = async (
       },
       UpdateExpression:
         "SET homeScore = :homeScore, awayScore = :awayScore, #status = :completed",
-      ConditionExpression:
-        "attribute_exists(id) AND #status = :scheduled",
+      ConditionExpression: "attribute_exists(id) AND #status = :scheduled",
       ExpressionAttributeNames: {
         "#status": "status",
       },
@@ -202,7 +196,7 @@ export const reportMatchResult = async (
 
       throw createError(
         409,
-        "Match result already registered or match is not scheduled"
+        "Match result already registered or match is not scheduled",
       );
     }
 
